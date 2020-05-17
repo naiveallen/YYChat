@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+    <context id="MySqlContext" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="com.yy.yychat.utils.MyMapper"/>
+        </plugin>
+
+        <!-- 数据源配置 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/yychat"
+                        userId="root"
+                        password="root">
+        </jdbcConnection>
+
+        <!-- 对于生成的pojo所在包 -->
+        <javaModelGenerator targetPackage="com.yy.yychat.pojo" targetProject="src/main/java">
+        </javaModelGenerator>
+
+        <!-- 对于生成的mapper所在目录 -->
+        <sqlMapGenerator targetPackage="mapper"  targetProject="src/main/resources">
+        </sqlMapGenerator>
+
+        <!-- 配置mapper对应的java映射 -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.yy.yychat.mapper"  targetProject="src/main/java">
+        </javaClientGenerator>
+
+        <table tableName="message"></table>
+        <table tableName="friends_request"></table>
+        <table tableName="friends"></table>
+        <table tableName="user"></table>
+
+    </context>
+</generatorConfiguration>
