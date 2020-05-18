@@ -21,7 +21,7 @@
             socket : null,
             init : function () {
                 if (window.WebSocket) {
-                    CHAT.socket = new WebSocket("ws://localhost:9999/chat");
+                    CHAT.socket = new WebSocket("ws://10.0.0.59:9999/chat");
                     CHAT.socket.onopen = function () {
                         console.log("连接建立成功...");
                     };
