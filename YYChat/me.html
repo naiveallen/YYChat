@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		<div class="mui-content">
+		    
+		    <ul class="mui-table-view">
+		        <li class="mui-table-view-cell mui-media">
+		            <a id="link_avatar" href="javascript:;">
+		            	<span class="mui-pull-right mui-icon mui-icon-arrowright" 
+		            			style="line-height: 42px;color: lightgray;margin-left: 3px;"></span>
+		                <img id="avatar" class="mui-media-object mui-pull-right" 
+						src="image/default_avatar.jpg">
+		                <div class="mui-media-body" style="line-height: 42px;font-size: 16px;">
+		                    	Avatar
+		                </div>
+		            </a>
+		        </li>
+		        <li class="mui-table-view-cell mui-media">
+		            <a id="link_nickname" href="javascript:;">
+		            	<span class="mui-pull-right mui-icon mui-icon-arrowright" 
+		            			style="color: lightgray;margin-left: 3px;"></span>
+		            	<span id="span_nickname" class="mui-pull-right" 
+		            			style="color: gray;font-size: 14px;"></span>
+		                <div class="mui-media-body">
+		                    Nickname
+		                </div>
+		            </a>
+		        </li>
+		        <li class="mui-table-view-cell mui-media">
+		            <a href="javascript:;">
+		            	<span id="span_username" class="mui-pull-right" 
+		            			style="color: gray;font-size: 14px;"></span>
+		                <div class="mui-media-body">
+		                    Username
+		                </div>
+		            </a>
+		        </li>
+		        <li class="mui-table-view-cell mui-media">
+		            <a id="link_qrcode" href="javascript:;">
+		            	<span class="mui-pull-right mui-icon mui-icon-arrowright" 
+		            			style="color: lightgray;margin-left: 3px;"></span>
+		                <img class="mui-media-object mui-pull-right" 
+		                	src="image/qrcode.png" style="max-width: 20px;height: 20px;">
+		                <div class="mui-media-body">
+		                    My QR Code
+		                </div>
+		            </a>
+		        </li>
+		    </ul>
+		    
+		    <br/>
+		    
+		    <ul class="mui-table-view">
+		    	<li class="mui-table-view-cell mui-media" 
+		    		style="text-align: center;">
+		            <a id="link_logout" href="javascript:;">
+		                <div class="mui-media-body">
+		                    Logout
+		                </div>
+		            </a>
+		        </li>
+		    </ul>
+		    
+		</div>
+		
+		<script src="js/mui.min.js"></script>
+		<script src="js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			
+			mui.plusReady(function(){
+				
+				let meWebview = plus.webview.currentWebview();
+				meWebview.addEventListener("show", function() {
+					refreshUserInfo();
+				}, { passive: false });
+				
+				// To avatar html 
+				let link_avatar = document.getElementById("link_avatar");
+				link_avatar.addEventListener("tap", function() {
+					mui.openWindow("avatar.html", "avatar.html");
+				}, { passive: false });
+				
+				let link_nickname = document.getElementById("link_nickname");
+				link_nickname.addEventListener("tap", function() {
+					mui.openWindow("mynickname.html", "mynickname.html");
+				}, { passive: false });
+				
+				window.addEventListener("refresh", function(){
+					refreshUserInfo();
+				}, { passive: false });
+				
+				let link_qrcode = document.getElementById("link_qrcode");
+				link_qrcode.addEventListener("tap", function(){
+					mui.openWindow({
+						url: "myQRCode.html", 
+						id: "myQRCode.html", 
+						styles: {}
+					})
+				}, { passive: false });
+				
+				let link_logout = document.getElementById("link_logout");
+				link_logout.addEventListener("tap", function(){
+					app.userLogout();
+					mui.openWindow("login.html", "login.html");
+				}, { passive: false });
+			});
+			
+			function refreshUserInfo() {
+				let user = app.getUserGlobalInfo();
+				console.log("login user: " + JSON.stringify(user))
+				
+				if (user != null) {
+					let avatar = user.avatar;
+					let nickname = user.nickname;
+					let username = user.username;
+					
+					let span_nickname = document.getElementById("span_nickname");
+					let span_username = document.getElementById("span_username");
+					
+					span_nickname.innerHTML = nickname;
+					span_username.innerHTML = username;
+					
+					if (app.isNotNull(avatar)) {
+						let avatar_element = document.getElementById("avatar");
+						avatar_element.src = app.imgServerUrl + avatar;
+					}
+				}
+				
+			}
+			
+		</script>
+	</body>
+
+</html>

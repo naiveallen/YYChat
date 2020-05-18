@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+	<link href="css/app.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+		
+		mui.plusReady(function() {
+			plus.navigator.setStatusBarBackground("#55aaff");
+			plus.navigator.setStatusBarStyle("light");
+		})
+    </script>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav title">
+		<h1 class="mui-title title-color"><b>YYChat</b></h1>
+	</header>
+	
+	<nav class="mui-bar mui-bar-tab">
+		<a class="mui-tab-item mui-active" tabindex="0">
+			<span class="mui-icon mui-icon-chat"></span>
+			<span class="mui-tab-label">Chats</span>
+		</a>
+		<a class="mui-tab-item" tabindex="1">
+			<span class="mui-icon mui-icon-phone"></span>
+			<span class="mui-tab-label">Contacts</span>
+		</a>
+		<a class="mui-tab-item" tabindex="2">
+			<span class="mui-icon mui-icon-navigate"></span>
+			<span class="mui-tab-label">Discover</span>
+		</a>
+		<a class="mui-tab-item" tabindex="3">
+			<span class="mui-icon mui-icon-person"></span>
+			<span class="mui-tab-label">Me</span>
+		</a>
+	</nav>
+	
+	
+	
+	
+	
+	<script type="text/javascript">
+		let pages = [
+			{
+				pageId: "chatlist.html",
+				pageURL: "chatlist.html"
+			},
+			{
+				pageId: "contacts.html",
+				pageURL: "contacts.html"
+			},
+			{
+				pageId: "discover.html",
+				pageURL: "discover.html"
+			},
+			{
+				pageId: "me.html",
+				pageURL: "me.html"
+			}
+		];
+		
+		let style = {
+			top: "44px",
+			bottom: "50px"
+		};
+		
+		mui.plusReady(function () {
+			mui.back = function() {
+				return false;
+			}
+		    let indexWebview = plus.webview.currentWebview();
+			for (page of pages) {
+				let webview = plus.webview.create(page.pageURL, page.pageId, style);
+				webview.hide();
+				indexWebview.append(webview);
+			}
+			plus.webview.show("chatlist.html");
+			
+			mui(".mui-bar-tab").on("tap", "a", function() {
+				let tabindex = this.getAttribute("tabindex");
+				plus.webview.show(pages[tabindex].pageId, "fade-in", 100);
+				for (let i = 0; i < pages.length; i++) {
+					if (i != tabindex) {
+						plus.webview.hide(pages[i].pageId, "fade-out", 100);
+					}
+				}
+			})
+			
+		})
+		
+		
+		
+	</script>
+	
+	
+</body>
+</html>

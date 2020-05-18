@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/app.css" />
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav title">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" style="color: white;"></a>
+			<a id="openMenu" class="mui-icon mui-icon-right-nav mui-pull-right" style="color: white;">•••</a>
+			<h1 class="mui-title title-color">Avatar</h1>
+		</header>
+
+		<div class="mui-content">
+			<img id="img_avatar" src="image/default_avatar.jpg" />
+		</div>
+		
+		<div id="sheet" class="mui-popover mui-popover-bottom mui-popover-action ">
+		    <ul class="mui-table-view">
+		      <li class="mui-table-view-cell">
+		        <a id="link_selectPhoto" href="#">Select Picture</a>
+		      </li>
+		      <li class="mui-table-view-cell">
+		        <a id="link_downloadPhoto" href="#">Download Picture</a>
+		      </li>
+		    </ul>
+		    
+		    <ul class="mui-table-view">
+		      <li class="mui-table-view-cell">
+		        <a href="#sheet"><b>Cancel</b></a>
+		      </li>
+		    </ul>
+		</div>
+		
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			mui.plusReady(function() {
+				
+				refresh_avatar();
+				
+				window.addEventListener("refresh", function(){
+					refresh_avatar();
+				}, { passive: false });
+
+				let imgWidth = document.body.clientWidth;
+				img_avatar.width = imgWidth;
+				img_avatar.height = imgWidth;
+
+				let openMenu = document.getElementById("openMenu");
+				openMenu.addEventListener("tap", function() {
+					mui("#sheet").popover("toggle");
+				}, { passive: false });
+				
+				// Select photo 
+				let link_selectPhoto = document.getElementById("link_selectPhoto");
+				link_selectPhoto.addEventListener("tap", function() {
+					mui.openWindow({
+						url: "plugin/v3.1.6/avatar-uploader.html",
+						id:"avatar-uploader.html",
+						createNew: true});
+					mui("#sheet").popover("toggle");
+				}, { passive: false });
+				
+				
+				// Download photo 
+				let link_downloadPhoto = document.getElementById("link_downloadPhoto");
+				link_downloadPhoto.addEventListener("tap", function() {
+					
+					plus.nativeUI.showWaiting("下载中...");
+					
+					let user = app.getUserGlobalInfo();
+					let faceImage = user.faceImageBig;
+					
+					let dtast = plus.downloader.createDownload(
+						app.imgServerUrl + faceImage,
+						{},
+						function(downloadFile, status) {
+							
+							plus.nativeUI.closeWaiting();
+							
+							if (status == 200) {
+								let tempFile = downloadFile.filename;
+								
+								// 通过相册api保存照片到本地相册
+								plus.gallery.save(tempFile, function() {
+									app.showToast("保存照片成功！", "success");
+								})
+								
+							} else {
+								app.showToast("下载错误...", "error");
+								console.log("下载错误...");
+							}
+							
+						}
+					);
+					dtast.start();	// 启动下载任务
+					
+				}, { passive: false });
+			});
+			
+			
+			function refresh_avatar() {
+				let user = app.getUserGlobalInfo();
+				let img_avatar = document.getElementById("img_avatar");
+
+				if(user != null) {
+					let avatar_img = user.avatar;
+					if(app.isNotNull(avatar_img)) {
+						img_avatar.src = app.imgServerUrl + avatar_img;
+					}
+				}
+			}
+		</script>
+
+	</body>
+
+</html>
