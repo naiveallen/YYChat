@@ -1,13 +1,16 @@
 package com.yy.yychat.controller;
 
 import com.yy.yychat.pojo.User;
+import com.yy.yychat.pojo.bo.UserBO;
 import com.yy.yychat.pojo.vo.UserVO;
 import com.yy.yychat.service.UserService;
+import com.yy.yychat.utils.FileUtils;
 import com.yy.yychat.utils.MD5Utils;
 import com.yy.yychat.utils.Result;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +22,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Value("${file-upload-path}")
+    String filePath;
 
     @PostMapping("/registerOrLogin")
     public Result registerOrLogin(@RequestBody User user) {
@@ -51,4 +57,39 @@ public class UserController {
 
         return Result.ok(userVO);
     }
+
+    @PostMapping("/uploadAvatar")
+    public Result uploadAvatar(@RequestBody UserBO userBO) {
+
+        // get the avatar base64 from front end
+        String base64 = userBO.getAvatarData();
+        String fileName = userBO.getId() + ".png";
+
+        try {
+            FileUtils.base64ToFile(filePath + fileName, base64);
+            System.out.println("Saved avatar.");
+            FileUtils.getThumbnail(filePath, fileName);
+            System.out.println("Saved avatar thumbnail.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String avatarUrl = "avatars/" + userBO.getId() + ".png";
+        String avatarThumbnailUrl = "avatars/" + userBO.getId() + "_80x80.png";
+
+        User user = new User();
+        user.setId(userBO.getId());
+        user.setAvatar(avatarUrl);
+        user.setAvatarThumbnail(avatarThumbnailUrl);
+
+        User res = userService.updateUserInfo(user);
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(res, userVO);
+
+        return Result.ok(userVO);
+    }
+
+
+
+
 }

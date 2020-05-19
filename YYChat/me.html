@@ -18,7 +18,7 @@
 		            	<span class="mui-pull-right mui-icon mui-icon-arrowright" 
 		            			style="line-height: 42px;color: lightgray;margin-left: 3px;"></span>
 		                <img id="avatar" class="mui-media-object mui-pull-right" 
-						src="image/default_avatar.jpg">
+						src="image/default_avatar.jpg" onerror="this.src='image/default_avatar.jpg';this.onerror=null">
 		                <div class="mui-media-body" style="line-height: 42px;font-size: 16px;">
 		                    	Avatar
 		                </div>
@@ -120,7 +120,7 @@
 				console.log("login user: " + JSON.stringify(user))
 				
 				if (user != null) {
-					let avatar = user.avatar;
+					let avatar = user.avatarThumbnail;
 					let nickname = user.nickname;
 					let username = user.username;
 					
@@ -132,7 +132,7 @@
 					
 					if (app.isNotNull(avatar)) {
 						let avatar_element = document.getElementById("avatar");
-						avatar_element.src = app.imgServerUrl + avatar;
+						avatar_element.src = app.serverUrl + avatar;
 					}
 				}
 				

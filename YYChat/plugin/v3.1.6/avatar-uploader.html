@@ -59,13 +59,11 @@
 				
 				var user = app.getUserGlobalInfo();
 				var avatar = user.avatar;
-				$image.attr('src', app.imgServerUrl + avatar);
+				$image.attr('src', app.serverUrl + avatar);
 				
 				console.log("Select a picture: ");
 				plus.gallery.pick( function(path){
-					
 					$image.attr('src', path);
-					
 					cutter();
 				}, function ( e ) {
 					mui.openWindow("index.html", "index.html");
@@ -81,36 +79,31 @@
 					if(result) {
 						var base64Url = result.toDataURL();
 						
-						// 上传头像
 						var user = app.getUserGlobalInfo();
-						// 与后端联调
-						mui.ajax(app.serverUrl + "/u/uploadFaceBase64",{
+
+						mui.ajax(app.serverUrl + "/user/uploadAvatar",{
 							data:{
-								userId:user.id,
-								faceData:base64Url
+								id:user.id,
+								avatarData:base64Url
 							},
-							dataType:'json',//服务器返回json格式数据
-							type:'post',//HTTP请求类型
-							timeout:10000,//超时时间设置为10秒；
+							dataType:'json',
+							type:'post',
+							timeout:10000,
 							headers:{'Content-Type':'application/json'},	              
 							success:function(data){
-								
-								// 关闭等待框
+
 								plus.nativeUI.closeWaiting();
 								
 								if (data.status == 200) {
 									var userInfo = data.data;
 									app.setUserGlobalInfo(userInfo);
 									
-									// 触发另外一个webview的自定义事件，可以使用 mui.fire()
-									var imooc_meWebview = plus.webview.getWebviewById("imooc-me.html");
-									mui.fire(imooc_meWebview, "refresh");
+									var meWebview = plus.webview.getWebviewById("me.html");
+									mui.fire(meWebview, "refresh");
 									
-									// 触发另外一个webview的自定义事件，可以使用 mui.fire()
-									var myfaceWebview = plus.webview.getWebviewById("myface.html");
-									mui.fire(myfaceWebview, "refresh");
+									var avatarWebview = plus.webview.getWebviewById("avatar.html");
+									mui.fire(avatarWebview, "refresh");
 									
-									// 页面跳转
 									mui.openWindow("index.html", "index.html");
 								} else {
 									app.showToast(data.msg, "error");

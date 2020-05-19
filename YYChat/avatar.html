@@ -18,7 +18,7 @@
 		</header>
 
 		<div class="mui-content">
-			<img id="img_avatar" src="image/default_avatar.jpg" />
+			<img id="img_avatar" src="image/default_avatar.jpg" onerror="this.src='image/default_avatar.jpg';this.onerror=null" />
 		</div>
 		
 		<div id="sheet" class="mui-popover mui-popover-bottom mui-popover-action ">
@@ -116,7 +116,7 @@
 				if(user != null) {
 					let avatar_img = user.avatar;
 					if(app.isNotNull(avatar_img)) {
-						img_avatar.src = app.imgServerUrl + avatar_img;
+						img_avatar.src = app.serverUrl + avatar_img;
 					}
 				}
 			}

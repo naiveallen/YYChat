@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public User register(User user) {
         user.setNickname(user.getUsername());
@@ -55,8 +56,17 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public User updateUserInfo(User user) {
-        return null;
+        userMapper.updateByPrimaryKeySelective(user);
+        return userMapper.selectByPrimaryKey(user.getId());
     }
+
+
+
+
+
+
+
 }

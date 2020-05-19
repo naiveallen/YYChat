@@ -20,10 +20,8 @@ public interface UserService {
 	 * @Description: 用户注册
 	 */
 	public User register(User user);
-	
-	/**
-	 * @Description: 修改用户记录
-	 */
+
+
 	public User updateUserInfo(User user);
 
 //	/**
