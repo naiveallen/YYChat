@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<script src="js/mui.js"></script>
+		<link href="css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/app.css" />
+
+		<style>
+			#mui-content {
+				width: 100%;
+				position: absolute;
+				top: 44px;
+				bottom: 0px;
+				background: #2e3132;
+			}
+		</style>
+	</head>
+
+	<body >
+
+		<header class="mui-bar mui-bar-nav title" style="position: fixed;">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left title-color"></a>
+			<a id="linx_download_qrcode" class="mui-pull-right" style="font-size: 15px;color: white;line-height: 44px;">
+				<img src="image/download.png" width="20px"/>
+			</a>
+			<h1 class="mui-title title-color"><b id="chatting-nickname">My QR Code</b></h1>
+		</header>
+		
+		<div id="mui-content" style="padding: 80px 30px 0px 30px;">
+			<div style="background-color: white;padding-top: 20px;padding-left: 20px;">
+				<img id="img_avatar" src="" width="60px" style="border-radius: 8%;float: left;"/>
+				<label id="lab_nickname" style="float: left;margin-left: 10px;margin-top: 10px;"></label>
+			</div>
+			<div style="background-color: white;text-align: center;">
+		    	<img id="img_my_qrcode" src="" />
+		    </div>
+		    <div style="background-color: white;text-align: center;">
+		    	<p style="padding-bottom: 10px;font-size: 12px;">Scan the QR Code to add me on YYChat</p>
+		    </div>
+		</div>
+		
+		<script type="application/javascript" src="js/app.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			
+			mui.plusReady(function(){
+				
+				let user = app.getUserGlobalInfo();
+				let qrcode = user.qrcode;
+				let avatar = user.avatarThumbnail;
+				let nickname = user.nickname;
+				
+				let img_my_qrcode = document.getElementById("img_my_qrcode");
+				img_my_qrcode.src = app.serverUrl + qrcode;
+				
+				let img_avatar = document.getElementById("img_avatar");
+				img_avatar.src = app.serverUrl + avatar;
+				
+				let lab_nickname = document.getElementById("lab_nickname");
+				lab_nickname.innerHTML = nickname;
+				
+				let imgWidth = document.body.clientWidth-60;
+				img_my_qrcode.width=imgWidth;
+				img_my_qrcode.height=imgWidth;
+
+				// Save qrcode to phone
+				let linx_download_qrcode = document.getElementById("linx_download_qrcode");
+				linx_download_qrcode.addEventListener("tap", function(){
+					
+					plus.nativeUI.showWaiting( "Downloading..." );
+
+					let download_task = plus.downloader.createDownload(
+						app.serverUrl + qrcode, 
+						{},
+						function(d, status) {
+							plus.nativeUI.closeWaiting();
+							if(status == 200) {
+								plus.gallery.save( d.filename, function () {
+									app.showToast( "Saved picture!", "success" );
+								});
+								console.log("Download success: " + d.filename);
+							} else {
+								app.showToast("Download error...", "error");
+								console.log("Download failed: " + status);
+							}
+						});
+					download_task.start();
+				}, { passive: false });
+			})
+		</script>
+	</body>
+
+</html>
