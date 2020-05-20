@@ -28,6 +28,7 @@ public class UserDaoImpl implements UserDao {
         return result;
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public User findById(Integer id) {
         return userMapper.selectByPrimaryKey(id);
@@ -36,12 +37,14 @@ public class UserDaoImpl implements UserDao {
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public User findByUsername(String username) {
-        User user = new User();
-        user.setUsername(username);
-        User res = userMapper.selectOne(user);
-        return res;
+        Example userExample = new Example(User.class);
+        Example.Criteria criteria = userExample.createCriteria();
+        criteria.andEqualTo("username", username);
+        User result = userMapper.selectOneByExample(userExample);
+        return result;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public User insertUser(User user) {
         userMapper.insert(user);
@@ -49,11 +52,13 @@ public class UserDaoImpl implements UserDao {
         return res;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public User updateUser(User user) {
         userMapper.updateByPrimaryKeySelective(user);
         return findById(user.getId());
     }
+
 
 
 

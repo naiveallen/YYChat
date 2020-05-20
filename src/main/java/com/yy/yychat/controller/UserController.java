@@ -1,5 +1,7 @@
 package com.yy.yychat.controller;
 
+import com.yy.yychat.dao.UserDao;
+import com.yy.yychat.enums.SearchFriendsStatus;
 import com.yy.yychat.pojo.User;
 import com.yy.yychat.pojo.bo.UserBO;
 import com.yy.yychat.pojo.vo.UserVO;
@@ -11,10 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Random;
 
@@ -24,6 +23,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserDao userDao;
 
     @Value("${avatar-upload-path}")
     String filePath;
@@ -105,6 +107,37 @@ public class UserController {
 
         return Result.ok(userVO);
     }
+
+
+    @GetMapping("/search")
+    public Result searchFriend(@RequestParam("myUserId") Integer myUserId,
+                               @RequestParam("friendUsername") String friendUsername) {
+        if (StringUtils.isBlank(friendUsername)) {
+            return Result.errorMsg("Cannot be empty...");
+        }
+
+        int myId = myUserId;
+        int status = userService.preSearchFriend(myId, friendUsername);
+        if (status == SearchFriendsStatus.SUCCESS.status) {
+            User friend = userDao.findByUsername(friendUsername);
+            UserVO userVO = new UserVO();
+            BeanUtils.copyProperties(friend, userVO);
+            return Result.ok(friend);
+        } else {
+            return Result.errorMsg(SearchFriendsStatus.getMsgByKey(status));
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 

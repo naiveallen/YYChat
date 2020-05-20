@@ -1,24 +1,25 @@
 package com.yy.yychat.service;
 
+import com.yy.yychat.dao.FriendDao;
 import com.yy.yychat.dao.UserDao;
-import com.yy.yychat.dao.UserDaoImpl;
-import com.yy.yychat.mapper.UserMapper;
+import com.yy.yychat.enums.SearchFriendsStatus;
+import com.yy.yychat.pojo.Friends;
 import com.yy.yychat.pojo.User;
 import com.yy.yychat.utils.MD5Utils;
 import com.yy.yychat.utils.QRCodeUtils;
-import com.yy.yychat.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import tk.mybatis.mapper.entity.Example;
+
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private FriendDao friendDao;
 
     @Autowired
     private QRCodeUtils qrCodeUtils;
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+
     @Override
     public User register(User user) {
 
@@ -61,10 +62,30 @@ public class UserServiceImpl implements UserService {
         return res;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+
     @Override
     public User updateUserInfo(User user) {
         return userDao.updateUser(user);
+    }
+
+
+    @Override
+    public int preSearchFriend(int myUserId, String friendUsername) {
+        User friend = userDao.findByUsername(friendUsername);
+        if (friend == null) {
+            return SearchFriendsStatus.USER_NOT_EXIST.status;
+        }
+
+        if (friend.getId() == myUserId) {
+            return SearchFriendsStatus.NOT_YOURSELF.status;
+        }
+
+        Friends friends = friendDao.searchFriendById(myUserId, friend.getId());
+        if (friends != null) {
+            return SearchFriendsStatus.ALREADY_FRIENDS.status;
+        }
+
+        return SearchFriendsStatus.SUCCESS.status;
     }
 
 
