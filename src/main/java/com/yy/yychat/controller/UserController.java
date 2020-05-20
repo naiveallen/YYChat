@@ -24,9 +24,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private UserDao userDao;
-
     @Value("${avatar-upload-path}")
     String filePath;
 
@@ -119,7 +116,7 @@ public class UserController {
         int myId = myUserId;
         int status = userService.preSearchFriend(myId, friendUsername);
         if (status == SearchFriendsStatus.SUCCESS.status) {
-            User friend = userDao.findByUsername(friendUsername);
+            User friend = userService.queryUserByUsername(friendUsername);
             UserVO userVO = new UserVO();
             BeanUtils.copyProperties(friend, userVO);
             return Result.ok(friend);
@@ -130,6 +127,23 @@ public class UserController {
     }
 
 
+    @PostMapping("/addFriendRequest")
+    public Result requestFriend(Integer myUserId, String friendUsername) {
+        if (StringUtils.isBlank(friendUsername)) {
+            return Result.errorMsg("Username cannot be empty...");
+        }
+        int myId = myUserId;
+        int status = userService.preSearchFriend(myId, friendUsername);
+        if (status == SearchFriendsStatus.SUCCESS.status) {
+            User friend = userService.queryUserByUsername(friendUsername);
+            userService.sendFriendRequest(myId, friendUsername);
+        } else {
+            return Result.errorMsg(SearchFriendsStatus.getMsgByKey(status));
+        }
+
+        return Result.ok();
+
+    }
 
 
 

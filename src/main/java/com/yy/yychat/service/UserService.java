@@ -8,6 +8,8 @@ public interface UserService {
 
 	public boolean queryUsernameIsExist(String username);
 
+	public User queryUserByUsername(String username);
+
 	public User login(String username, String pwd);
 
 	public User register(User user);
@@ -16,14 +18,12 @@ public interface UserService {
 
 	public int preSearchFriend(int myUserId, String friendUsername);
 
+	public void sendFriendRequest(int myUserId, String friendUsername);
 
 
 
-//	/**
-//	 * @Description: 添加好友请求记录，保存到数据库
-//	 */
-//	public void sendFriendRequest(String myUserId, String friendUsername);
-//
+
+
 //	/**
 //	 * @Description: 查询好友请求
 //	 */

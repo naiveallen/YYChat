@@ -4,12 +4,15 @@ import com.yy.yychat.dao.FriendDao;
 import com.yy.yychat.dao.UserDao;
 import com.yy.yychat.enums.SearchFriendsStatus;
 import com.yy.yychat.pojo.Friends;
+import com.yy.yychat.pojo.FriendsRequest;
 import com.yy.yychat.pojo.User;
 import com.yy.yychat.utils.MD5Utils;
 import com.yy.yychat.utils.QRCodeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 
 @Service
@@ -31,6 +34,12 @@ public class UserServiceImpl implements UserService {
     public boolean queryUsernameIsExist(String username) {
         User user = userDao.findByUsername(username);
         return user != null;
+    }
+
+    @Override
+    public User queryUserByUsername(String username) {
+        User user = userDao.findByUsername(username);
+        return user;
     }
 
 
@@ -89,9 +98,22 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Override
+    public void sendFriendRequest(int myUserId, String friendUsername) {
+        User friend = userDao.findByUsername(friendUsername);
 
+        FriendsRequest res = friendDao.searchFriendRequestById(myUserId, friend.getId());
+        if (res != null) {
+            return;
+        }
 
+        FriendsRequest friendsRequest = new FriendsRequest();
+        friendsRequest.setSenderId(myUserId);
+        friendsRequest.setAccepterId(friend.getId());
+        friendsRequest.setRequestTime(new Date());
+        friendDao.insertFriendRequest(friendsRequest);
 
+    }
 
 
 }
