@@ -9,6 +9,10 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 //        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/avatars/**").addResourceLocations("file:D:\\yychat\\avatars\\");
+        registry.addResourceHandler("/avatars/**")
+                .addResourceLocations("file:D:\\yychat\\avatars\\");
+
+        registry.addResourceHandler("/qrcodes/**")
+                .addResourceLocations("file:D:\\yychat\\qrcodes\\");
     }
 }

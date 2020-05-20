@@ -6,21 +6,11 @@ import java.util.List;
 
 public interface UserService {
 
-	/**
-	 * @Description: 判断用户名是否存在
-	 */
 	public boolean queryUsernameIsExist(String username);
-	
-	/**
-	 * @Description: 查询用户是否存在
-	 */
-	public User login(String username, String pwd);
-	
-	/**
-	 * @Description: 用户注册
-	 */
-	public User register(User user);
 
+	public User login(String username, String pwd);
+
+	public User register(User user);
 
 	public User updateUserInfo(User user);
 

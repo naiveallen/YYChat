@@ -1,9 +1,14 @@
 package com.yy.yychat.service;
 
+import com.yy.yychat.dao.UserDao;
+import com.yy.yychat.dao.UserDaoImpl;
 import com.yy.yychat.mapper.UserMapper;
 import com.yy.yychat.pojo.User;
 import com.yy.yychat.utils.MD5Utils;
+import com.yy.yychat.utils.QRCodeUtils;
+import com.yy.yychat.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,38 +18,38 @@ import tk.mybatis.mapper.entity.Example;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserMapper userMapper;
+    private UserDao userDao;
 
-    @Transactional(propagation = Propagation.SUPPORTS)
+    @Autowired
+    private QRCodeUtils qrCodeUtils;
+
+    @Value("${qrcode-upload-path}")
+    String qrCodePath;
+
     @Override
     public boolean queryUsernameIsExist(String username) {
-        User user = new User();
-        user.setUsername(username);
-        User res = userMapper.selectOne(user);
-        return res != null;
+        User user = userDao.findByUsername(username);
+        return user != null;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
+
     @Override
-    public User login(String username, String pwd) {
-        Example userExample = new Example(User.class);
-        Example.Criteria criteria = userExample.createCriteria();
-
-        criteria.andEqualTo("username", username);
-        criteria.andEqualTo("password", pwd);
-
-        User result = userMapper.selectOneByExample(userExample);
-
-        return result;
+    public User login(String username, String password) {
+        User user = userDao.queryUserByUsernameAndPassword(username, password);
+        return user;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public User register(User user) {
+
         user.setNickname(user.getUsername());
         user.setAvatar("");
         user.setAvatarThumbnail("");
-        user.setQrcode("");
+
+        String qrCodeFileName = qrCodePath + user.getUsername() + "_qrcode.png";
+        qrCodeUtils.createQRCode(qrCodeFileName, "username:" + user.getUsername());
+        user.setQrcode("qrcodes/" + user.getUsername() + "_qrcode.png");
 
         try {
             user.setPassword(MD5Utils.getMD5Str(user.getPassword()));
@@ -52,15 +57,14 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
 
-        userMapper.insert(user);
-        return user;
+        User res = userDao.insertUser(user);
+        return res;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public User updateUserInfo(User user) {
-        userMapper.updateByPrimaryKeySelective(user);
-        return userMapper.selectByPrimaryKey(user.getId());
+        return userDao.updateUser(user);
     }
 
 

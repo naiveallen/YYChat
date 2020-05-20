@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Random;
+
 @RestController
 @RequestMapping("user")
 public class UserController {
@@ -23,7 +25,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Value("${file-upload-path}")
+    @Value("${avatar-upload-path}")
     String filePath;
 
     @PostMapping("/registerOrLogin")
@@ -61,9 +63,11 @@ public class UserController {
     @PostMapping("/uploadAvatar")
     public Result uploadAvatar(@RequestBody UserBO userBO) {
 
+        Random random = new Random();
+
         // get the avatar base64 from front end
         String base64 = userBO.getAvatarData();
-        String fileName = userBO.getId() + ".png";
+        String fileName = userBO.getId() + "_" + random.nextInt(1000000);
 
         try {
             FileUtils.base64ToFile(filePath + fileName, base64);
@@ -74,8 +78,8 @@ public class UserController {
             e.printStackTrace();
         }
 
-        String avatarUrl = "avatars/" + userBO.getId() + ".png";
-        String avatarThumbnailUrl = "avatars/" + userBO.getId() + "_80x80.png";
+        String avatarUrl = "avatars/" + fileName + ".png";
+        String avatarThumbnailUrl = "avatars/" + fileName + "_80x80.png";
 
         User user = new User();
         user.setId(userBO.getId());
@@ -88,6 +92,21 @@ public class UserController {
 
         return Result.ok(userVO);
     }
+
+    @PostMapping("/nickname")
+    public Result setNickname(@RequestBody UserBO userBO) {
+        User user = new User();
+        user.setId(userBO.getId());
+        user.setNickname(userBO.getNickname());
+
+        User res = userService.updateUserInfo(user);
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(res, userVO);
+
+        return Result.ok(userVO);
+    }
+
+
 
 
 

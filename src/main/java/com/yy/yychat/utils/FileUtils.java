@@ -123,6 +123,7 @@ public class FileUtils {
 	public static boolean base64ToFile(String filePath, String base64Data)  throws Exception {
 		String dataPrix = "";
         String data = "";
+		filePath = filePath + ".png";
         
         if(base64Data == null || "".equals(base64Data)){
             return false;
@@ -144,11 +145,11 @@ public class FileUtils {
 
 
 	public static void getThumbnail(String filePath, String fileName) {
-	    String name = fileName.split("\\.")[0];
-	    String thumbnailPath = filePath + name + "_80x80.png";
+		String original = filePath + fileName + ".png";
+		String thumbnailPath = filePath + fileName + "_80x80.png";
 
         try {
-			Thumbnails.of(filePath + fileName)
+			Thumbnails.of(original)
 					.size(80, 80)
 					.toFile(thumbnailPath);
 		} catch (IOException e) {

@@ -80,6 +80,7 @@
 			mui.plusReady(function(){
 				
 				let meWebview = plus.webview.currentWebview();
+				// when open this page, refresh it 
 				meWebview.addEventListener("show", function() {
 					refreshUserInfo();
 				}, { passive: false });
@@ -93,10 +94,6 @@
 				let link_nickname = document.getElementById("link_nickname");
 				link_nickname.addEventListener("tap", function() {
 					mui.openWindow("mynickname.html", "mynickname.html");
-				}, { passive: false });
-				
-				window.addEventListener("refresh", function(){
-					refreshUserInfo();
 				}, { passive: false });
 				
 				let link_qrcode = document.getElementById("link_qrcode");
@@ -113,7 +110,15 @@
 					app.userLogout();
 					mui.openWindow("login.html", "login.html");
 				}, { passive: false });
+				
+				
+				// when "refresh" event happens, refresh
+				window.addEventListener("refresh", function(){
+					refreshUserInfo();
+				}, { passive: false });
+				
 			});
+			
 			
 			function refreshUserInfo() {
 				let user = app.getUserGlobalInfo();
@@ -135,7 +140,6 @@
 						avatar_element.src = app.serverUrl + avatar;
 					}
 				}
-				
 			}
 			
 		</script>

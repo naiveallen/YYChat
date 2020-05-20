@@ -76,13 +76,13 @@
 				let link_downloadPhoto = document.getElementById("link_downloadPhoto");
 				link_downloadPhoto.addEventListener("tap", function() {
 					
-					plus.nativeUI.showWaiting("下载中...");
+					plus.nativeUI.showWaiting("Downloading...");
 					
 					let user = app.getUserGlobalInfo();
-					let faceImage = user.faceImageBig;
+					let avatar = user.avatar;
 					
-					let dtast = plus.downloader.createDownload(
-						app.imgServerUrl + faceImage,
+					let download_task = plus.downloader.createDownload(
+						app.serverUrl + avatar,
 						{},
 						function(downloadFile, status) {
 							
@@ -91,19 +91,19 @@
 							if (status == 200) {
 								let tempFile = downloadFile.filename;
 								
-								// 通过相册api保存照片到本地相册
+								// save picture via gallery API 
 								plus.gallery.save(tempFile, function() {
-									app.showToast("保存照片成功！", "success");
+									app.showToast("Saved picture!", "success");
 								})
 								
 							} else {
-								app.showToast("下载错误...", "error");
-								console.log("下载错误...");
+								app.showToast("Download error...", "error");
+								console.log("Download error...");
 							}
 							
 						}
 					);
-					dtast.start();	// 启动下载任务
+					download_task.start();
 					
 				}, { passive: false });
 			});
