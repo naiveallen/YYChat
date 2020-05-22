@@ -2,10 +2,13 @@ package com.yy.yychat.service;
 
 import com.yy.yychat.dao.FriendDao;
 import com.yy.yychat.dao.UserDao;
+import com.yy.yychat.enums.FriendRequestOpType;
 import com.yy.yychat.enums.SearchFriendsStatus;
 import com.yy.yychat.pojo.Friends;
 import com.yy.yychat.pojo.FriendsRequest;
 import com.yy.yychat.pojo.User;
+import com.yy.yychat.pojo.vo.FriendRequestVO;
+import com.yy.yychat.pojo.vo.MyFriendsVO;
 import com.yy.yychat.utils.MD5Utils;
 import com.yy.yychat.utils.QRCodeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -114,6 +118,42 @@ public class UserServiceImpl implements UserService {
         friendDao.insertFriendRequest(friendsRequest);
 
     }
+
+    @Override
+    public List<FriendRequestVO> queryFreiendRequest(int accepterId) {
+        List<FriendRequestVO> res = friendDao.queryFriendRequestList(accepterId);
+        return res;
+    }
+
+    @Override
+    public void handleFriendRequest(int accepterId, int senderId, int opType) {
+        if (opType == FriendRequestOpType.ACCEPT.type) {
+            // add two records in friends table
+            Friends friend1 = new Friends();
+            Friends friend2 = new Friends();
+            friend1.setUserId(accepterId);
+            friend1.setFriendId(senderId);
+            friend2.setUserId(senderId);
+            friend2.setFriendId(accepterId);
+
+            friendDao.insertFriends(friend1);
+            friendDao.insertFriends(friend2);
+        }
+
+        // delete record in friend_request table
+        friendDao.deleteFriendRequest(accepterId, senderId);
+        friendDao.deleteFriendRequest(senderId, accepterId);
+
+    }
+
+    @Override
+    public List<MyFriendsVO> queryMyFriends(int userId) {
+        List<MyFriendsVO> res = friendDao.queryMyFriends(userId);
+        return res;
+    }
+
+
+
 
 
 }

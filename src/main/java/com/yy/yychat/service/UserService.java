@@ -1,6 +1,8 @@
 package com.yy.yychat.service;
 
 import com.yy.yychat.pojo.User;
+import com.yy.yychat.pojo.vo.FriendRequestVO;
+import com.yy.yychat.pojo.vo.MyFriendsVO;
 
 import java.util.List;
 
@@ -20,33 +22,16 @@ public interface UserService {
 
 	public void sendFriendRequest(int myUserId, String friendUsername);
 
+	public List<FriendRequestVO> queryFreiendRequest(int accepterId);
+
+	public void handleFriendRequest(int accepterId, int senderId, int opType);
+
+	public List<MyFriendsVO> queryMyFriends(int userId);
 
 
 
 
-//	/**
-//	 * @Description: 查询好友请求
-//	 */
-//	public List<FriendRequestVO> queryFriendRequestList(String acceptUserId);
-//
-//	/**
-//	 * @Description: 删除好友请求记录
-//	 */
-//	public void deleteFriendRequest(String sendUserId, String acceptUserId);
-//
-//	/**
-//	 * @Description: 通过好友请求
-//	 * 				1. 保存好友
-//	 * 				2. 逆向保存好友
-//	 * 				3. 删除好友请求记录
-//	 */
-//	public void passFriendRequest(String sendUserId, String acceptUserId);
-//
-//	/**
-//	 * @Description: 查询好友列表
-//	 */
-//	public List<MyFriendsVO> queryMyFriends(String userId);
-//
+
 //	/**
 //	 * @Description: 保存聊天消息到数据库
 //	 */
@@ -61,5 +46,6 @@ public interface UserService {
 //	 * @Description: 获取未签收消息列表
 //	 */
 //	public List<com.imooc.pojo.ChatMsg> getUnReadMsgList(String acceptUserId);
-	
+
+
 }

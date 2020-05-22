@@ -90,10 +90,37 @@
 					}
 				}
 			})
+
+			setTimeout("initData()", "1000");
 			
 		})
 		
+		// 监听网络状态更改
+		function netChangeSwitch(){
+			document.addEventListener("netchange", function(){
+				// 网络状态获取和判断
+				let connectionStatus = plus.networkinfo.getCurrentType();
+				if (connectionStatus != 0 && connectionStatus != 1) {
+					// 重新打开网络连接
+					let muxin_title = document.getElementById("muxin_title");
+					muxin_title.innerHTML = "<b>慕信</b>";
+				} else {
+					// 关闭网络连接
+					let muxin_title = document.getElementById("muxin_title");
+					muxin_title.innerHTML = "<b>慕信(未连接)</b>";
+				}
+			}, { passive: false });
+		}
 		
+
+		function initData() {
+			let chatlist = plus.webview.getWebviewById("chatlist.html");
+			mui.fire(chatlist, "refresh");
+			
+			let me = plus.webview.getWebviewById("me.html");
+			mui.fire(me, "refresh");
+		}
+
 		
 	</script>
 	

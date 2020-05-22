@@ -56,23 +56,22 @@
 			
 			function onmarked( type, result ) {
 				if (type === 0) {
-					var content = result.split(":");
+					let content = result.split(":");
 					console.log("username: " + content[1]);
 					if (content.length != 2) {
-						mui.alert(result)
+						mui.alert(result);
 					} else {
-						var friendUsername = content[1];
+						let friendUsername = content[1];
 						
-						var user = app.getUserGlobalInfo();
+						let user = app.getUserGlobalInfo();
 						
 						plus.nativeUI.showWaiting("Wait a second...");
 						mui.ajax(app.serverUrl + "/user/search?myUserId=" + user.id +
 										"&friendUsername=" + friendUsername, {
 							data:{},
 							dataType:'json',
-							type:'post',
-							timeout:10000,
-							headers:{'Content-Type':'application/json'},	              
+							type:'get',
+							timeout:10000,           
 							success:function(data){
 								plus.nativeUI.closeWaiting();
 								

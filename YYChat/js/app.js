@@ -4,7 +4,7 @@ window.app = {
 	
 	serverUrl: 'http://10.0.0.59:8888/',
 	
-	imgServerUrl: 'http://192.168.0.110:88/imooc/',
+	// imgServerUrl: 'http://192.168.0.110:88/imooc/',
 	
 	isNotNull: function(str) {
 		if (str != null && str != "" && str != undefined) {
@@ -39,13 +39,13 @@ window.app = {
 	
 	getContactList: function() {
 		var contactListStr = plus.storage.getItem("contactList");
-		
 		if (!this.isNotNull(contactListStr)) {
 			return [];
 		}
-		
 		return JSON.parse(contactListStr);
 	},
+	
+	
 	
 	/**
 	 * 根据用户id，从本地的缓存（联系人列表）中获取朋友的信息

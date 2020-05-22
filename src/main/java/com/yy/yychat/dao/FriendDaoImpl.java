@@ -1,14 +1,19 @@
 package com.yy.yychat.dao;
 
+import com.yy.yychat.mapper.CustomMapper;
 import com.yy.yychat.mapper.FriendsMapper;
 import com.yy.yychat.mapper.FriendsRequestMapper;
 import com.yy.yychat.pojo.Friends;
 import com.yy.yychat.pojo.FriendsRequest;
+import com.yy.yychat.pojo.vo.FriendRequestVO;
+import com.yy.yychat.pojo.vo.MyFriendsVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
+
+import java.util.List;
 
 @Repository
 public class FriendDaoImpl implements FriendDao {
@@ -18,6 +23,9 @@ public class FriendDaoImpl implements FriendDao {
 
     @Autowired
     private FriendsRequestMapper friendsRequestMapper;
+
+    @Autowired
+    private CustomMapper customMapper;
 
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
@@ -44,12 +52,6 @@ public class FriendDaoImpl implements FriendDao {
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public Friends insertFriends(Friends friends) {
-        return null;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    @Override
     public FriendsRequest insertFriendRequest(FriendsRequest friendsRequest) {
         friendsRequestMapper.insert(friendsRequest);
         FriendsRequest res = searchFriendRequestById(
@@ -58,6 +60,36 @@ public class FriendDaoImpl implements FriendDao {
 
         return res;
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void deleteFriendRequest(int userId, int friendId) {
+        FriendsRequest friendsRequest = searchFriendRequestById(userId, friendId);
+        if (friendsRequest != null) {
+            friendsRequestMapper.delete(friendsRequest);
+        }
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public List<FriendRequestVO> queryFriendRequestList(int accepterId) {
+        return customMapper.queryFriendRequestList(accepterId);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void insertFriends(Friends friends) {
+        friendsMapper.insert(friends);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public List<MyFriendsVO> queryMyFriends(int userId) {
+        return customMapper.queryMyFriends(userId);
+    }
+
+
+
 
 
 }

@@ -1,9 +1,11 @@
 package com.yy.yychat.controller;
 
-import com.yy.yychat.dao.UserDao;
+import com.yy.yychat.enums.FriendRequestOpType;
 import com.yy.yychat.enums.SearchFriendsStatus;
 import com.yy.yychat.pojo.User;
 import com.yy.yychat.pojo.bo.UserBO;
+import com.yy.yychat.pojo.vo.FriendRequestVO;
+import com.yy.yychat.pojo.vo.MyFriendsVO;
 import com.yy.yychat.pojo.vo.UserVO;
 import com.yy.yychat.service.UserService;
 import com.yy.yychat.utils.FileUtils;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Random;
 
 @RestController
@@ -29,6 +32,7 @@ public class UserController {
 
     @PostMapping("/registerOrLogin")
     public Result registerOrLogin(@RequestBody User user) {
+        System.out.println("Post /registerOrLogin");
         if (StringUtils.isBlank(user.getUsername())
                 || StringUtils.isBlank(user.getPassword())) {
             return Result.errorMsg("Username or password cannot be empty...");
@@ -61,6 +65,7 @@ public class UserController {
 
     @PostMapping("/uploadAvatar")
     public Result uploadAvatar(@RequestBody UserBO userBO) {
+        System.out.println("Post /uploadAvatar");
 
         Random random = new Random();
 
@@ -94,6 +99,7 @@ public class UserController {
 
     @PostMapping("/nickname")
     public Result setNickname(@RequestBody UserBO userBO) {
+        System.out.println("Post /nickname");
         User user = new User();
         user.setId(userBO.getId());
         user.setNickname(userBO.getNickname());
@@ -109,6 +115,7 @@ public class UserController {
     @GetMapping("/search")
     public Result searchFriend(@RequestParam("myUserId") Integer myUserId,
                                @RequestParam("friendUsername") String friendUsername) {
+        System.out.println("Get /search");
         if (StringUtils.isBlank(friendUsername)) {
             return Result.errorMsg("Cannot be empty...");
         }
@@ -129,6 +136,7 @@ public class UserController {
 
     @PostMapping("/addFriendRequest")
     public Result requestFriend(Integer myUserId, String friendUsername) {
+        System.out.println("Post /addFriendRequest");
         if (StringUtils.isBlank(friendUsername)) {
             return Result.errorMsg("Username cannot be empty...");
         }
@@ -144,6 +152,38 @@ public class UserController {
         return Result.ok();
 
     }
+
+
+    @GetMapping("/queryFriendRequest")
+    public Result requestFriend(@RequestParam("userId") int accepterId) {
+        System.out.println("Get /queryFriendRequest");
+        List<FriendRequestVO> res = userService.queryFreiendRequest(accepterId);
+        return Result.ok(res);
+    }
+
+
+    @PostMapping("/handleFriendRequest")
+    public Result handleFriendRequest(int accepterId, int senderId, int opType) {
+        System.out.println("Post /handleFriendRequest");
+
+        if (StringUtils.isBlank(FriendRequestOpType.getMsgByType(opType))) {
+            return Result.errorMsg("");
+        }
+
+        userService.handleFriendRequest(accepterId, senderId, opType);
+
+        return Result.ok();
+    }
+
+
+    @GetMapping("/myFriends")
+    public Result myFriends(@RequestParam("userId") int userId) {
+        System.out.println("Get /myFriends");
+        List<MyFriendsVO> friends = userService.queryMyFriends(userId);
+        return Result.ok(friends);
+    }
+
+
 
 
 
