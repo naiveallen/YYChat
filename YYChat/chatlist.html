@@ -59,27 +59,6 @@
 			            <p class="mui-ellipsis">这里是聊天内容...</p>
 		            </div>
 			    </li>
-			    <li class="mui-table-view-cell mui-media">
-		            <div class="mui-media-body">
-			            <img class="mui-media-object mui-pull-left" src="image/face-default-cat.png"/>
-			            	乙
-			            <p class="mui-ellipsis">这里是聊天内容...</p>
-		            </div>
-			    </li>
-			    <li class="mui-table-view-cell mui-media">
-		            <div class="mui-media-body">
-			            <img class="mui-media-object mui-pull-left" src="image/face-default-cat.png"/>
-			            	丙
-			            <p class="mui-ellipsis">这里是聊天内容...</p>
-		            </div>
-			    </li>
-			    <li class="mui-table-view-cell mui-media">
-		            <div class="mui-media-body">
-			            <img class="mui-media-object mui-pull-left" src="image/face-default-cat.png"/>
-			            	丁
-			            <p class="mui-ellipsis">这里是聊天内容...</p>
-		            </div>
-			    </li>
 			</ul>
 		</div>
 
@@ -130,9 +109,9 @@
 					let friendUserId = me.getAttribute("friendUserId");
 					app.deleteUserChatHistory(user.id, friendUserId);
 					app.deleteUserChatSnapshot(user.id, friendUserId);
-					let li = me.parentNode.parentNode;	// 获取li标签
+					let li = me.parentNode.parentNode;
 					let ul_chatSnapshot = document.getElementById("ul_chatSnapshot");
-					ul_chatSnapshot.removeChild(li);	// 删除li标签
+					ul_chatSnapshot.removeChild(li);
 				});
 				
 			});
@@ -210,38 +189,29 @@
 					} else {
 						isRead = false;
 					}
-					
-					// 接受到消息之后，对消息记录进行签收
+
 					let dataContentSign = new app.DataContent(app.SIGNED, null, chatMsg.msgId);
 					CHAT.chat(JSON.stringify(dataContentSign));
-					
-					// 保存聊天历史记录到本地缓存
+
 					app.saveUserChatHistory(myId, friendUserId, msg, 2);
 					app.saveUserChatSnapshot(myId, friendUserId, msg, isRead);
-					// 渲染快照列表进行展示
 					loadingChatSnapshot();
 				},
 				wsclose: function() {
-					console.log("连接关闭...");
+					console.log("Connection close...");
 				},
 				wserror: function() {
-					console.log("发生错误...");
+					console.log("Connection error...");
 				},
 				signMsgList: function(unSignedMsgIds) {
-					// 构建批量签收对象的模型
 					let dataContentSign = new app.DataContent(app.SIGNED,
 															  null,
 															  unSignedMsgIds);
-					// 发送批量签收的请求
 					CHAT.chat(JSON.stringify(dataContentSign));
 				},
 				keepalive: function() {
-					// 构建对象
 					let dataContent = new app.DataContent(app.KEEPALIVE, null, null);
-					// 发送心跳
 					CHAT.chat(JSON.stringify(dataContent));
-					
-					// 定时执行函数
 					fetchUnReadMsg();
 					fetchContactList();
 				}
@@ -249,40 +219,31 @@
 
 			function fetchUnReadMsg() {
 				let user = app.getUserGlobalInfo();
-				let msgIds = ",";	// 格式：  ,1001,1002,1003,
-				mui.ajax(app.serverUrl + "/u/getUnReadMsgList?acceptUserId=" + user.id,{
+				let msgIds = ",";
+				mui.ajax(app.serverUrl + "/user/getUnReadMsgList?acceptUserId=" + user.id,{
 					data:{},
-					dataType:'json',//服务器返回json格式数据
-					type:'post',//HTTP请求类型
-					timeout:10000,//超时时间设置为10秒；
+					dataType:'json',
+					type:'post',
+					timeout:10000,
 					headers:{'Content-Type':'application/json'},	              
 					success:function(data){
 						
 						if (data.status == 200) {
 							let unReadMsgList = data.data;
 							console.log(JSON.stringify(unReadMsgList));
-							
-							// 1. 保存聊天记录到本地
-							// 2. 保存聊天快照到本地
-							// 3. 对这些未签收的消息，批量签收
+
 							for (let i = 0 ; i < unReadMsgList.length ; i ++) {
 								let msgObj = unReadMsgList[i];
-								// 逐条存入聊天记录
 								app.saveUserChatHistory(msgObj.acceptUserId, 
 														msgObj.sendUserId, 
 														msgObj.msg, 2);
-								// 存入聊天快照
 								app.saveUserChatSnapshot(msgObj.acceptUserId, 
 														 msgObj.sendUserId, 
 														 msgObj.msg, false);
-								// 拼接批量接受的消息id字符串，逗号间隔
 								msgIds += msgObj.id;
 								msgIds += ",";
 							}
-							
-							// 调用批量签收的方法
 							CHAT.signMsgList(msgIds);
-							// 刷新快照
 							loadingChatSnapshot();
 						}
 					}
@@ -300,10 +261,8 @@
 					let chatItem = chatSnapshotList[i];
 					
 					let friendId = chatItem.friendId;
-					// 根据friendId从本地联系人列表的缓存中拿到相关信息
 					let friend = app.getFriendFromContactList(friendId);
-					
-					// 判断消息的已读或未读状态
+
 					let isRead = chatItem.isRead;
 					let readHtmlBefore = '';
 					let readHtmlAfter = '';

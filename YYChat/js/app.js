@@ -116,8 +116,7 @@ window.app = {
 		
 		return chatHistoryList;
 	},
-	
-	// 删除我和朋友的聊天记录
+
 	deleteUserChatHistory: function(myId, friendId) {
 		var chatKey = "chat-" + myId + "-" + friendId;
 		plus.storage.removeItem(chatKey);

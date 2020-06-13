@@ -4,17 +4,23 @@ import com.yy.yychat.dao.FriendDao;
 import com.yy.yychat.dao.MsgDao;
 import com.yy.yychat.dao.UserDao;
 import com.yy.yychat.enums.FriendRequestOpType;
+import com.yy.yychat.enums.MsgActionEnum;
 import com.yy.yychat.enums.MsgSignFlagEnum;
 import com.yy.yychat.enums.SearchFriendsStatus;
 import com.yy.yychat.netty.ChatMsg;
+import com.yy.yychat.netty.DataContent;
+import com.yy.yychat.netty.UserChannelRel;
 import com.yy.yychat.pojo.Friends;
 import com.yy.yychat.pojo.FriendsRequest;
 import com.yy.yychat.pojo.Message;
 import com.yy.yychat.pojo.User;
 import com.yy.yychat.pojo.vo.FriendRequestVO;
 import com.yy.yychat.pojo.vo.MyFriendsVO;
+import com.yy.yychat.utils.JsonUtils;
 import com.yy.yychat.utils.MD5Utils;
 import com.yy.yychat.utils.QRCodeUtils;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -151,6 +157,16 @@ public class UserServiceImpl implements UserService {
         // delete record in friend_request table
         friendDao.deleteFriendRequest(accepterId, senderId);
         friendDao.deleteFriendRequest(senderId, accepterId);
+
+        // Send latest friends list to sender
+        Channel sendChannel = UserChannelRel.get(senderId);
+        if (sendChannel != null) {
+            DataContent dataContent = new DataContent();
+            dataContent.setAction(MsgActionEnum.PULL_FRIEND.type);
+
+            sendChannel.writeAndFlush(new TextWebSocketFrame(
+                            JsonUtils.objectToJson(dataContent)));
+        }
 
     }
 
