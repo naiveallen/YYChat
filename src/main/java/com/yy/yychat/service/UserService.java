@@ -1,5 +1,6 @@
 package com.yy.yychat.service;
 
+import com.yy.yychat.netty.ChatMsg;
 import com.yy.yychat.pojo.User;
 import com.yy.yychat.pojo.vo.FriendRequestVO;
 import com.yy.yychat.pojo.vo.MyFriendsVO;
@@ -28,20 +29,15 @@ public interface UserService {
 
 	public List<MyFriendsVO> queryMyFriends(int userId);
 
+	public int saveMsg(ChatMsg chatMsg);
+
+	public void updateMsgSigned(List<Integer> msgIdList);
 
 
 
 
-//	/**
-//	 * @Description: 保存聊天消息到数据库
-//	 */
-//	public String saveMsg(ChatMsg chatMsg);
-//
-//	/**
-//	 * @Description: 批量签收消息
-//	 */
-//	public void updateMsgSigned(List<String> msgIdList);
-//
+
+
 //	/**
 //	 * @Description: 获取未签收消息列表
 //	 */

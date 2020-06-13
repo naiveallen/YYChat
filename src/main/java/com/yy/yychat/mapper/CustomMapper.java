@@ -14,6 +14,6 @@ public interface CustomMapper extends MyMapper<User> {
 	
 	public List<MyFriendsVO> queryMyFriends(int userId);
 	
-	public void batchUpdateMsgSigned(List<String> msgIdList);
+	public void batchUpdateMsgSigned(List<Integer> msgIdList);
 	
 }

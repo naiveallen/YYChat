@@ -1,10 +1,8 @@
 window.app = {
 	
-	nettyServerUrl: 'ws://10.0.0.59:9999/ws',
+	nettyServerUrl: 'ws://10.0.0.59:9999/chat',
 	
 	serverUrl: 'http://10.0.0.59:8888/',
-	
-	// imgServerUrl: 'http://192.168.0.110:88/imooc/',
 	
 	isNotNull: function(str) {
 		if (str != null && str != "" && str != undefined) {
@@ -19,12 +17,12 @@ window.app = {
 	},
 	
 	setUserGlobalInfo: function(user) {
-		var userInfoStr = JSON.stringify(user);
+		let userInfoStr = JSON.stringify(user);
 		plus.storage.setItem("userInfo", userInfoStr);
 	},
 
 	getUserGlobalInfo: function() {
-		var userInfoStr = plus.storage.getItem("userInfo");
+		let userInfoStr = plus.storage.getItem("userInfo");
 		return JSON.parse(userInfoStr);
 	},
 	
@@ -33,44 +31,40 @@ window.app = {
 	},
 	
 	setContactList: function(contactList) {
-		var contactListStr = JSON.stringify(contactList);
+		let contactListStr = JSON.stringify(contactList);
 		plus.storage.setItem("contactList", contactListStr);
 	},
 	
 	getContactList: function() {
-		var contactListStr = plus.storage.getItem("contactList");
+		let contactListStr = plus.storage.getItem("contactList");
 		if (!this.isNotNull(contactListStr)) {
 			return [];
 		}
 		return JSON.parse(contactListStr);
 	},
-	
-	
-	
-	/**
-	 * 根据用户id，从本地的缓存（联系人列表）中获取朋友的信息
-	 * @param {Object} friendId
-	 */
+
 	getFriendFromContactList: function(friendId) {
-		var contactListStr = plus.storage.getItem("contactList");
-		
-		// 判断contactListStr是否为空
+		let contactListStr = plus.storage.getItem("contactList");
 		if (this.isNotNull(contactListStr)) {
-			// 不为空，则把用户信息返回
-			var contactList = JSON.parse(contactListStr);
-			for (var i = 0 ; i < contactList.length ; i ++) {
-				var friend = contactList[i];
+			let contactList = JSON.parse(contactListStr);
+			for (let i = 0 ; i < contactList.length ; i ++) {
+				let friend = contactList[i];
 				if (friend.friendUserId == friendId) {
 					return friend;
 					break;
 				}
 			}
 		} else {
-			// 如果为空，直接返回null
 			return null;
 		}
 	},
-	
+
+
+
+
+
+
+
 	/**
 	 * 保存用户的聊天记录
 	 * @param {Object} myId
@@ -251,41 +245,29 @@ window.app = {
 		}
 	},
 
-	/**
-	 * 和后端的枚举对应
-	 */
-	CONNECT: 1, 	// 第一次(或重连)初始化连接
-	CHAT: 2, 		// 聊天消息
-	SIGNED: 3, 		// 消息签收
-	KEEPALIVE: 4, 	// 客户端保持心跳
-	PULL_FRIEND:5,	// 重新拉取好友
+
+	CONNECT: 1,
+	CHAT: 2,
+	SIGNED: 3,
+	KEEPALIVE: 4,
+	PULL_FRIEND:5,
 	
-	/**
-	 * 和后端的 ChatMsg 聊天模型对象保持一致
-	 * @param {Object} senderId
-	 * @param {Object} receiverId
-	 * @param {Object} msg
-	 * @param {Object} msgId
-	 */
+
 	ChatMsg: function(senderId, receiverId, msg, msgId){
 		this.senderId = senderId;
 		this.receiverId = receiverId;
 		this.msg = msg;
 		this.msgId = msgId;
 	},
-	
-	/**
-	 * 构建消息 DataContent 模型对象
-	 * @param {Object} action
-	 * @param {Object} chatMsg
-	 * @param {Object} extand
-	 */
-	DataContent: function(action, chatMsg, extand){
+
+	DataContent: function(action, chatMsg, extend){
 		this.action = action;
 		this.chatMsg = chatMsg;
-		this.extand = extand;
+		this.extend = extend;
 	},
-	
+
+
+
 	/**
 	 * 单个聊天记录的对象
 	 * @param {Object} myId

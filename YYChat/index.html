@@ -39,10 +39,7 @@
 			<span class="mui-tab-label">Me</span>
 		</a>
 	</nav>
-	
-	
-	
-	
+
 	
 	<script type="text/javascript">
 		let pages = [
@@ -94,23 +91,19 @@
 			setTimeout("initData()", "1000");
 			
 		})
-		
-		// 监听网络状态更改
-		function netChangeSwitch(){
-			document.addEventListener("netchange", function(){
-				// 网络状态获取和判断
-				let connectionStatus = plus.networkinfo.getCurrentType();
-				if (connectionStatus != 0 && connectionStatus != 1) {
-					// 重新打开网络连接
-					let muxin_title = document.getElementById("muxin_title");
-					muxin_title.innerHTML = "<b>慕信</b>";
-				} else {
-					// 关闭网络连接
-					let muxin_title = document.getElementById("muxin_title");
-					muxin_title.innerHTML = "<b>慕信(未连接)</b>";
-				}
-			}, { passive: false });
-		}
+
+		// function netChangeSwitch(){
+		// 	document.addEventListener("netchange", function(){
+		// 		let connectionStatus = plus.networkinfo.getCurrentType();
+		// 		if (connectionStatus != 0 && connectionStatus != 1) {
+		// 			let muxin_title = document.getElementById("muxin_title");
+		// 			muxin_title.innerHTML = "<b>慕信</b>";
+		// 		} else {
+		// 			let muxin_title = document.getElementById("muxin_title");
+		// 			muxin_title.innerHTML = "<b>慕信(未连接)</b>";
+		// 		}
+		// 	}, { passive: false });
+		// }
 		
 
 		function initData() {

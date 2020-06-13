@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yy.yychat.mapper.CustomMapper" >
 
-
 	<select id="queryFriendRequestList"
 	    resultType="com.yy.yychat.pojo.vo.FriendRequestVO"
 	    parameterType="Integer">
@@ -20,7 +19,6 @@
 		where 
 			fr.accepter_id = #{accepterId}
 	</select>
-
 
 	<select id="queryMyFriends" 
 	    resultType="com.yy.yychat.pojo.vo.MyFriendsVO"
@@ -43,11 +41,9 @@
 	</select>
 
 
-	
-	<!-- 批处理更新消息为已签收 -->
 	<update id="batchUpdateMsgSigned">
 	
-		update chat_msg set sign_flag = 1 where id in
+		update message set is_read = 1 where id in
 		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
 			#{item}
 		</foreach>

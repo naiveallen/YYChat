@@ -1,11 +1,15 @@
 package com.yy.yychat.service;
 
 import com.yy.yychat.dao.FriendDao;
+import com.yy.yychat.dao.MsgDao;
 import com.yy.yychat.dao.UserDao;
 import com.yy.yychat.enums.FriendRequestOpType;
+import com.yy.yychat.enums.MsgSignFlagEnum;
 import com.yy.yychat.enums.SearchFriendsStatus;
+import com.yy.yychat.netty.ChatMsg;
 import com.yy.yychat.pojo.Friends;
 import com.yy.yychat.pojo.FriendsRequest;
+import com.yy.yychat.pojo.Message;
 import com.yy.yychat.pojo.User;
 import com.yy.yychat.pojo.vo.FriendRequestVO;
 import com.yy.yychat.pojo.vo.MyFriendsVO;
@@ -27,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private FriendDao friendDao;
+
+    @Autowired
+    private MsgDao msgDao;
 
     @Autowired
     private QRCodeUtils qrCodeUtils;
@@ -64,6 +71,7 @@ public class UserServiceImpl implements UserService {
         String qrCodeFileName = qrCodePath + user.getUsername() + "_qrcode.png";
         qrCodeUtils.createQRCode(qrCodeFileName, "username:" + user.getUsername());
         user.setQrcode("qrcodes/" + user.getUsername() + "_qrcode.png");
+        System.out.println("QRCode generated.");
 
         try {
             user.setPassword(MD5Utils.getMD5Str(user.getPassword()));
@@ -152,7 +160,23 @@ public class UserServiceImpl implements UserService {
         return res;
     }
 
+    @Override
+    public int saveMsg(ChatMsg chatMsg) {
+        Message msg = new Message();
+        msg.setAccpterId(chatMsg.getReceiverId());
+        msg.setSenderId(chatMsg.getSenderId());
+        msg.setCreateTime(new Date());
+        msg.setIsRead(MsgSignFlagEnum.unsign.type);
+        msg.setMsg(chatMsg.getMsg());
+        int id = msgDao.insertMsg(msg);
 
+        return id;
+    }
+
+    @Override
+    public void updateMsgSigned(List<Integer> msgIdList) {
+        msgDao.batchUpdateMsgRead(msgIdList);
+    }
 
 
 

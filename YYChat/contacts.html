@@ -80,7 +80,7 @@
 				
 				fetchContactList();
 				
-				var thisWebview = plus.webview.currentWebview();
+				let thisWebview = plus.webview.currentWebview();
 				thisWebview.addEventListener("show", function(){
 					fetchContactList();
 					renderContactPage();
@@ -89,7 +89,7 @@
 				
 			});
 			
-			var enWords = [
+			let enWords = [
 				'A', 'B', 'C', 'D', 'E', 'F', 'G', 
 				'H', 'I', 'J', 'K', 'L', 'M', 'N',
 				'O', 'P', 'Q', 'R', 'S', 'T', 
@@ -108,7 +108,7 @@
 			}
 			
 			function getOrderOfEnWords(enChar) {
-				for (var i = 0 ; i < enWords.length ; i ++) {
+				for (let i = 0 ; i < enWords.length ; i ++) {
 					if (enWords[i] == enChar) {
 						return i;
 					}
@@ -147,21 +147,19 @@
 				document.getElementById("contactList").innerHTML = contactHtml;
 				
 				clearContactArray();
-				
-				// 为好友通讯录批量绑定点击事件
+
 				mui("#contactList").on("tap", ".chat-with-friend", function(e){
 					let friendUserId = this.getAttribute("friendUserId");
 					let friendNickname = this.getAttribute("friendNickname");
-					let friendFaceImage = this.getAttribute("friendFaceImage");
-					
-					// 打开聊天子页面
+					let friendAvatar = this.getAttribute("friendAvatar");
+
 					mui.openWindow({
 						url: "chatting.html",
-						id: "chatting-" + friendUserId,	// 每个朋友的聊天页面都是唯一对应的
+						id: "chatting-" + friendUserId,
 						extras: {
 							friendUserId: friendUserId,
 							friendNickname: friendNickname,
-							friendFaceImage: friendFaceImage
+							friendAvatar: friendAvatar
 						}
 					});
 					

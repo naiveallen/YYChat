@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/app.css" />
+		<link rel="stylesheet" type="text/css" href="css/chat.css" />
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+				overflow: hidden;
+				-webkit-touch-callout: none;
+				-webkit-user-select: none;
+			}
+		</style>
+	</head>
+
+	<body contextmenu="return false;">
+
+		<header class="mui-bar mui-bar-nav title" style="position: fixed;">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left title-color"></a>
+			<h1 class="mui-title title-color"><b id="chatting-nickname">YY Chat</b></h1>
+		</header>
+
+		<div id="msg-outter" class="mui-content">
+			<div id='msg'>
+				
+				<div class="friend_lists">
+					<div class="header_img">
+						<img src="image/default_avatar.jpg" width="40px" height="40px" />
+					</div>
+					<div class="msg-wrapper right">
+						<p class="msg-left-white">晚上过来吃饭？</p>
+					</div>
+				</div>
+
+				<div class="me_lists">
+					<div class="header_img">
+						<img src="image/default_avatar.jpg" width="40px" height="40px" />
+					</div>
+					<div class="msg-wrapper left">
+						<p class="msg-right-green">好的，没问题！时间地点？</p>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		
+		<footer>
+			<div class="footer-center">
+				<textarea id='msg-text' type="text" class='input-text'></textarea>
+			</div>
+			<label for="" class="footer-right">
+				<button type="button" class="mui-btn mui-btn-gray" id="send">Send</button>
+			</label>
+		</footer>
+		
+		<script src="js/mui.min.js"></script>
+		<script type="application/javascript" src="js/app.js"></script>
+		<script type="text/javascript">
+
+				let friendUserId;
+				let friendNickname;
+				let friendAvatar;
+				mui.plusReady(function(){
+
+					let me = app.getUserGlobalInfo();
+
+					let chattingWebview = plus.webview.currentWebview();
+
+					chattingWebview.setStyle({
+						softinputMode: "adjustResize"
+					});
+
+					friendUserId = chattingWebview.friendUserId;
+					friendNickname = chattingWebview.friendNickname;
+					friendAvatar = chattingWebview.friendAvatar;
+
+					document.getElementById("chatting-nickname").innerHTML = friendNickname;
+
+					initChatHistory();
+					
+					let areaMsgList = document.getElementById("msg");
+					areaMsgList.scrollTop = areaMsgList.scrollHeight + areaMsgList.offsetHeight;
+
+					let msg_text = document.getElementById("msg-text");
+					let send = document.getElementById("send");
+
+					msg_text.addEventListener("input", function(){
+						let msg_text_val = msg_text.value;
+						if (msg_text_val.length > 0) {
+							send.setAttribute("class", "mui-btn-green");
+						} else {
+							send.setAttribute("class", "mui-btn-gray");
+						}
+					}, { passive: false });
+
+					window.addEventListener("resize", function(){
+						resizeScreen();
+						document.getElementById("msg-outter").style.paddingBottom = "50px";
+					}, { passive: false });
+
+					send.addEventListener("tap", function(){
+
+						let connectionStatus = plus.networkinfo.getCurrentType();
+						if (connectionStatus == 0 || connectionStatus == 1) {
+							app.showToast("Network connection fail...", "error");
+							return;
+						}
+
+						let msg_text_val = msg_text.value;
+
+						if (msg_text_val.length === 0) {
+							return;
+						}
+
+						sendMsg(app.serverUrl + me.avatarThumbnail, msg_text_val);
+						msg_text.value = "";
+						send.setAttribute("class", "mui-btn-gray");
+
+						let chatMsg = new app.ChatMsg(me.id, friendUserId, msg_text_val, null);
+						let dataContent = new app.DataContent(app.CHAT, chatMsg, null);
+
+						let wsWebview = plus.webview.getWebviewById("chatlist.html");
+						wsWebview.evalJS("CHAT.chat('" + JSON.stringify(dataContent) + "')");
+
+						app.saveUserChatHistory(me.id, friendUserId, msg_text_val, 1);
+						app.saveUserChatSnapshot(me.id, friendUserId, msg_text_val, true);
+
+					}, { passive: false });
+				});
+
+
+				function receiveMsg(msg) {
+					
+					let msgHtml = '<div class="friend_lists">' +
+										'<div class="header_img">' +
+											'<img src="' + app.serverUrl + friendAvatar + '" width="40px" height="40px" />' +
+										'</div>' +
+										'<div class="msg-wrapper right">' +
+											'<p class="msg-left-white">' + msg + '</p>' +
+										'</div>' +
+								  '</div>'; 
+					
+					let msg_list = document.getElementById("msg");
+					msg_list.insertAdjacentHTML("beforeend", msgHtml);
+					
+					playReceiveMsgSound();
+				}
+
+				function sendMsg(faceImg, msg) {
+					let msgHtml = '<div class="me_lists">' +
+									'<div class="header_img">' +
+										'<img src="' + faceImg + '" width="40px" height="40px" />' +
+									'</div>' +
+									'<div class="msg-wrapper left">' +
+										'<p class="msg-right-green">' + msg + '</p>' +
+									'</div>' +
+								  '</div>';
+					let msg_list = document.getElementById("msg");
+					msg_list.insertAdjacentHTML("beforeend", msgHtml);
+					playSendMsgSound();
+				}
+
+				function playSendMsgSound() {
+					let audioPlayer = plus.audio.createPlayer("/mp3/send.mp3");
+					audioPlayer.play();
+				}
+
+				function playReceiveMsgSound() {
+					let audioPlayer = plus.audio.createPlayer("/mp3/di_didi.mp3");
+					audioPlayer.play();
+				}
+
+				function resizeScreen() {
+					let areaMsgList = document.getElementById("msg");
+					// 设置聊天记录进入页面的时候自动滚动到最后一条
+					areaMsgList.scrollTop = areaMsgList.scrollHeight + areaMsgList.offsetHeight;
+				}
+
+
+			function initChatHistory() {
+				let msg_list = document.getElementById("msg");
+				
+				let me = app.getUserGlobalInfo();
+				let myId = me.id;
+				let myFaceImg = me.faceImage;
+
+				let chatHistoryList = app.getUserChatHistory(myId, friendUserId);
+				
+				let togetherHTML = "";
+				
+				for (let i = 0 ; i < chatHistoryList.length ; i ++) {
+					let singleMsg = chatHistoryList[i];
+					if (singleMsg.flag == 1) {
+						togetherHTML += '<div class="me_lists">' +
+									'<div class="header_img">' +
+										'<img src="' + app.imgServerUrl + myFaceImg + '" width="40px" height="40px" />' +
+									'</div>' +
+									'<div class="msg-wrapper left">' +
+										'<p class="msg-right-green">' + singleMsg.msg + '</p>' +
+									'</div>' +
+								  '</div>';
+					} else {
+						togetherHTML += '<div class="friend_lists">' +
+										'<div class="header_img">' +
+											'<img src="' + app.imgServerUrl + friendAvatar + '" width="40px" height="40px" />' +
+										'</div>' +
+										'<div class="msg-wrapper right">' +
+											'<p class="msg-left-white">' + singleMsg.msg + '</p>' +
+										'</div>' +
+								  '</div>';
+					}
+				}
+				msg_list.innerHTML = togetherHTML;
+			}
+			
+		</script>
+	</body>
+
+</html>
