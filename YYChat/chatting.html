@@ -30,24 +30,6 @@
 
 		<div id="msg-outter" class="mui-content">
 			<div id='msg'>
-				
-				<div class="friend_lists">
-					<div class="header_img">
-						<img src="image/default_avatar.jpg" width="40px" height="40px" />
-					</div>
-					<div class="msg-wrapper right">
-						<p class="msg-left-white">晚上过来吃饭？</p>
-					</div>
-				</div>
-
-				<div class="me_lists">
-					<div class="header_img">
-						<img src="image/default_avatar.jpg" width="40px" height="40px" />
-					</div>
-					<div class="msg-wrapper left">
-						<p class="msg-right-green">好的，没问题！时间地点？</p>
-					</div>
-				</div>
 
 			</div>
 		</div>
@@ -180,10 +162,8 @@
 
 				function resizeScreen() {
 					let areaMsgList = document.getElementById("msg");
-					// 设置聊天记录进入页面的时候自动滚动到最后一条
 					areaMsgList.scrollTop = areaMsgList.scrollHeight + areaMsgList.offsetHeight;
 				}
-
 
 			function initChatHistory() {
 				let msg_list = document.getElementById("msg");

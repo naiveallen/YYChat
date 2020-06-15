@@ -1,5 +1,4 @@
-﻿/*图片气泡*/
-.friend_lists {
+﻿.friend_lists {
 	margin: 0 50px 0px 10px;
 	position: relative;
 }
@@ -26,7 +25,6 @@
 }
 
 
-/*背景气泡*/
 .msg-left-white {
 	background-color: #FFFFFF;
 	font-size: 16px;

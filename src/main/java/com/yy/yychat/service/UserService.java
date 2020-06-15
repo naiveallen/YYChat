@@ -33,15 +33,4 @@ public interface UserService {
 
 	public void updateMsgSigned(List<Integer> msgIdList);
 
-
-
-
-
-
-//	/**
-//	 * @Description: 获取未签收消息列表
-//	 */
-//	public List<com.imooc.pojo.ChatMsg> getUnReadMsgList(String acceptUserId);
-
-
 }
