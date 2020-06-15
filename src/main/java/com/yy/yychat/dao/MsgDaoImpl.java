@@ -4,11 +4,13 @@ import com.yy.yychat.mapper.CustomMapper;
 import com.yy.yychat.mapper.MessageMapper;
 import com.yy.yychat.pojo.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Repository
 public class MsgDaoImpl implements MsgDao{
 
     @Autowired
